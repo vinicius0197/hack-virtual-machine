@@ -59,6 +59,8 @@ def main():
                 if parser.command_type == 'C_PUSH' or \
                    parser.command_type == 'C_POP':
                     code_writer.write_push_pop(parser)
+                elif parser.command_type == 'C_ARITHMETIC':
+                    code_writer.write_arithmetic(parser)
 
 
 if __name__ == "__main__":

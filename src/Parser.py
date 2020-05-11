@@ -12,8 +12,13 @@ class Parser:
         self.command_type = self.__get_command_type()
 
     def __tokenize(self):
-        tokens = self.line.split()
-        self.command, self.segment, self.index = tokens
+        try:
+            tokens = self.line.split()
+            self.command, self.segment, self.index = tokens
+        except ValueError:
+            self.command = self.line.rstrip()
+            self.segment = ''
+            self.index = ''
 
     def __get_command_type(self):
         if self.command == 'push':
