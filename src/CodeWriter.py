@@ -5,6 +5,8 @@ class CodeWriter:
     def __init__(self, output):
         self.file = self.__open_file(output)
         self.label_counter = 0
+        self.name = os.path.splitext(os.path.normpath(
+            output).split(os.path.sep)[-1])[0]
 
     def __open_file(self, output):
         output_file_name = os.path.splitext(os.path.normpath(
@@ -389,6 +391,24 @@ class CodeWriter:
                         f'Invalid index "{index}" for \
                         {parser.command} instruction')
 
+            elif segment == 'static':
+                try:
+                    int(index)
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+                    out = f'@{self.name}.{index}\n \
+                            D=M\n \
+                            @SP\n \
+                            A=M\n \
+                            M=D\n \
+                            @SP\n \
+                            M=M+1\n'.replace(" ", "")
+                    self.file.write(out_comment)
+                    self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+
         elif parser.command_type == 'C_POP':
             segment = parser.segment
             index = parser.index
@@ -558,6 +578,22 @@ class CodeWriter:
                                 M=D\n'.replace(" ", "")
                         self.file.write(out_comment)
                         self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+
+            elif segment == 'static':
+                try:
+                    int(index)
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+                    out = f'@SP\n \
+                            AM=M-1\n \
+                            D=M\n \
+                            @{self.name}.{index}\n \
+                            M=D\n'.replace(" ", "")
+                    self.file.write(out_comment)
+                    self.file.write(out)
                 except ValueError:
                     raise Exception(
                         f'Invalid index "{index}" for \
