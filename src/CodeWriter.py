@@ -350,6 +350,45 @@ class CodeWriter:
                         f'Invalid index "{index}" for \
                         {parser.command} instruction')
 
+            elif segment == 'pointer':
+                try:
+                    int(index)
+                    if int(index) > 1 or int(index) < 0:
+                        raise Exception(
+                            f'Value {index} out of range for \
+                              {parser.command} instruction. Must be 0 or 1')
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+
+                    if int(index) == 0:
+                        out = f'@THIS\n \
+                                D=M\n \
+                                @SP\n \
+                                A=M\n \
+                                M=D\n \
+                                @SP\n \
+                                D=M\n \
+                                D=D+1\n \
+                                M=D\n'.replace(" ", "")
+                        self.file.write(out_comment)
+                        self.file.write(out)
+
+                    elif int(index) == 1:
+                        out = f'@THAT\n \
+                                D=M\n \
+                                @SP\n \
+                                A=M\n \
+                                M=D\n \
+                                @SP\n \
+                                D=M\n \
+                                D=D+1\n \
+                                M=D\n'.replace(" ", "")
+                        self.file.write(out_comment)
+                        self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+
         elif parser.command_type == 'C_POP':
             segment = parser.segment
             index = parser.index
@@ -483,6 +522,42 @@ class CodeWriter:
                             M=D\n'.replace(" ", "")
                     self.file.write(out_comment)
                     self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+
+            elif segment == 'pointer':
+                try:
+                    int(index)
+                    if int(index) > 1 or int(index) < 0:
+                        raise Exception(
+                            f'Value {index} out of range for \
+                              {parser.command} instruction. Must be 0 or 1')
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+
+                    if int(index) == 0:
+                        out = f'@SP\n \
+                                D=M\n \
+                                D=D-1\n \
+                                M=D\n \
+                                A=M\n \
+                                D=M\n \
+                                @THIS\n \
+                                M=D\n'.replace(" ", "")
+                        self.file.write(out_comment)
+                        self.file.write(out)
+                    elif int(index) == 1:
+                        out = f'@SP\n \
+                                D=M\n \
+                                D=D-1\n \
+                                M=D\n \
+                                A=M\n \
+                                D=M\n \
+                                @THAT\n \
+                                M=D\n'.replace(" ", "")
+                        self.file.write(out_comment)
+                        self.file.write(out)
                 except ValueError:
                     raise Exception(
                         f'Invalid index "{index}" for \
