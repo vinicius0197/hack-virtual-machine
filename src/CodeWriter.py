@@ -205,22 +205,76 @@ class CodeWriter:
         if parser.command_type == 'C_PUSH':
             segment = parser.segment
             index = parser.index
+            if segment == 'constant':
 
-            try:
-                int(index)
-                out_comment = f'//{parser.command} {segment} {index}\n'
-                out = f'@{index}\n \
-                        D=A\n \
-                        @SP\n \
-                        A=M\n \
-                        M=D\n \
-                        @SP\n \
-                        D=M\n \
-                        D=D+1\n \
-                        M=D\n'.replace(" ", "")
-                self.file.write(out_comment)
-                self.file.write(out)
-            except ValueError:
-                raise Exception(
-                    f'Invalid index "{index}" for \
-                      {parser.command} instruction')
+                try:
+                    int(index)
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+                    out = f'@{index}\n \
+                            D=A\n \
+                            @SP\n \
+                            A=M\n \
+                            M=D\n \
+                            @SP\n \
+                            D=M\n \
+                            D=D+1\n \
+                            M=D\n'.replace(" ", "")
+                    self.file.write(out_comment)
+                    self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+            elif segment == 'local':
+                try:
+                    int(index)
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+                    out = f'@LCL\n \
+                            D=M\n \
+                            @{index}\n \
+                            D=D+A\n \
+                            A=D\n \
+                            D=M\n \
+                            @SP\n \
+                            A=M\n \
+                            M=D\n \
+                            @SP\n \
+                            D=M\n \
+                            D=D+1\n \
+                            M=D\n'.replace(" ", "")
+                    self.file.write(out_comment)
+                    self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
+
+        elif parser.command_type == 'C_POP':
+            segment = parser.segment
+            index = parser.index
+
+            if segment == 'local':
+                try:
+                    int(index)
+                    out_comment = f'//{parser.command} {segment} {index}\n'
+                    out = f'@SP\n \
+                            D=M-1\n \
+                            M=D\n \
+                            @LCL\n \
+                            D=M\n \
+                            @{index}\n \
+                            D=D+A\n \
+                            @R13\n \
+                            M=D\n \
+                            @SP\n \
+                            A=M\n \
+                            D=M\n \
+                            @R13\n \
+                            A=M\n \
+                            M=D\n'.replace(" ", "")
+                    self.file.write(out_comment)
+                    self.file.write(out)
+                except ValueError:
+                    raise Exception(
+                        f'Invalid index "{index}" for \
+                        {parser.command} instruction')
