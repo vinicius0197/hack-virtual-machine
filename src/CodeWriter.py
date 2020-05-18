@@ -14,6 +14,30 @@ class CodeWriter:
         f = open(output_file_name, 'w')
         return f
 
+    def write_label(self, parser):
+        out_comment = f'//label\n'
+        out = f'({parser.label})\n'
+        self.file.write(out_comment)
+        self.file.write(out)
+
+    def write_goto(self, parser):
+        out_comment = f'//goto\n'
+        out = f'@{parser.label}\n \
+                0;JMP\n'.replace(" ", "")
+        self.file.write(out_comment)
+        self.file.write(out)
+
+    def write_if(self, parser):
+        out_comment = f'//if\n'
+        out = f'@SP\n \
+                M=M-1\n \
+                A=M\n \
+                D=M\n \
+                @{parser.label}\n \
+                D;JNE\n'.replace(" ", "")
+        self.file.write(out_comment)
+        self.file.write(out)
+
     def write_arithmetic(self, parser):
         if parser.command == 'add':
             out_comment = f'//add\n'

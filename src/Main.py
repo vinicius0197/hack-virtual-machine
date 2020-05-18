@@ -61,6 +61,12 @@ def main():
                     code_writer.write_push_pop(parser)
                 elif parser.command_type == 'C_ARITHMETIC':
                     code_writer.write_arithmetic(parser)
+                elif parser.command_type == 'C_LABEL':
+                    code_writer.write_label(parser)
+                elif parser.command_type == 'C_GOTO':
+                    code_writer.write_goto(parser)
+                elif parser.command_type == 'C_IF':
+                    code_writer.write_if(parser)
 
 
 if __name__ == "__main__":
