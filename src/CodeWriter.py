@@ -12,12 +12,15 @@ class CodeWriter:
 
     def __open_file(self, output):
         if Path(output).is_dir():
-            output_file_name = basename(dirname(output)) + output + '.asm'
-            f = open(output_file_name, 'w')
+            output_file_name = basename(dirname(output)) + '.asm'
+            file_path = f'{os.path.dirname(output)}/{output_file_name}'
+            f = open(file_path, 'w')
         else:
+
             output_file_name = os.path.splitext(os.path.normpath(
                 output).split(os.path.sep)[-1])[0] + '.asm'
-            f = open(output_file_name, 'w')
+            file_path = f'{os.path.dirname(output)}/{output_file_name}'
+            f = open(file_path, 'w')
         return f
 
     def write_label(self, parser):
