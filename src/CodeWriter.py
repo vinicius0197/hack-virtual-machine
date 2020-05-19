@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+from os.path import dirname, basename
 
 
 class CodeWriter:
@@ -9,9 +11,13 @@ class CodeWriter:
             output).split(os.path.sep)[-1])[0]
 
     def __open_file(self, output):
-        output_file_name = os.path.splitext(os.path.normpath(
-            output).split(os.path.sep)[-1])[0] + '.asm'
-        f = open(output_file_name, 'w')
+        if Path(output).is_dir():
+            output_file_name = basename(dirname(output)) + output + '.asm'
+            f = open(output_file_name, 'w')
+        else:
+            output_file_name = os.path.splitext(os.path.normpath(
+                output).split(os.path.sep)[-1])[0] + '.asm'
+            f = open(output_file_name, 'w')
         return f
 
     def write_label(self, parser):
@@ -35,6 +41,23 @@ class CodeWriter:
                 D=M\n \
                 @{parser.label}\n \
                 D;JNE\n'.replace(" ", "")
+        self.file.write(out_comment)
+        self.file.write(out)
+
+    def write_function(self, parser):
+        out_comment = f'//function\n'
+        out = f'({parser.function_name})\n \
+                @{parser.variables}\n \
+                D=A-1\n \
+                (LOOP_{parser.function_name})\n \
+                @SP\n \
+                A=M\n \
+                M=0\n \
+                @SP\n \
+                M=M+1\n \
+                @LOOP_{parser.function_name}\n \
+                D=D-1\n \
+                D;JGE\n'.replace(" ", "")
         self.file.write(out_comment)
         self.file.write(out)
 

@@ -5,6 +5,8 @@ class Parser:
         self.segment = None
         self.index = None
         self.label = None
+        self.function_name = None
+        self.variables = None
 
         self.command_type = None
 
@@ -15,8 +17,11 @@ class Parser:
     def __tokenize(self):
         try:
             tokens = self.line.split()
-            if self.command == 'function' or self.command == 'call':
-                print('todo')
+            if self.command == 'function':
+                self.command, self.function_name, self.variables = tokens
+            elif self.command == 'call':
+                # todo
+                print('hey')
             else:
                 self.command, self.segment, self.index = tokens
         except ValueError:
