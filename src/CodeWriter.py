@@ -64,6 +64,77 @@ class CodeWriter:
         self.file.write(out_comment)
         self.file.write(out)
 
+    def write_return(self, parser):
+        out_comment = f'// return\n'
+        out = f'// gets end frame\n \
+                @LCL\n \
+                D=M\n \
+                @endFrame\n \
+                M=D\n \
+                // get return addr\n \
+                @5\n \
+                D=A\n \
+                @endFrame\n \
+                D=M-D\n \
+                A=D\n \
+                D=M\n \
+                @retAddr\n \
+                M=D\n \
+                // pop return value from stack\n \
+                @SP\n \
+                M=M-1\n \
+                A=M\n \
+                D=M\n \
+                // reposition the return value for the caller\n \
+                @ARG\n \
+                A=M\n \
+                M=D\n \
+                // reposition SP of the caller\n \
+                @ARG\n \
+                A=M\n \
+                D=A+1\n \
+                @SP\n \
+                M=D\n \
+                // restores THAT of the caller\n \
+                @endFrame\n \
+                D=M-1\n \
+                A=D\n \
+                D=M\n \
+                @THAT\n \
+                M=D\n \
+                // restores THIS of the caller\n \
+                @endFrame\n \
+                D=M\n \
+                @2\n \
+                D=D-A\n \
+                A=D\n \
+                D=M\n \
+                @THIS\n \
+                M=D\n \
+                // restores ARG of the caller\n \
+                @endFrame\n \
+                D=M\n \
+                @3\n \
+                D=D-A\n \
+                A=D\n \
+                D=M\n \
+                @ARG\n \
+                M=D\n \
+                // restores LCL of the caller\n \
+                @endFrame\n \
+                D=M\n \
+                @4\n \
+                D=D-A\n \
+                A=D\n \
+                D=M\n \
+                @LCL\n \
+                M=D\n \
+                // goes to return address\n \
+                @retAddr\n \
+                0;JMP\n'.replace(" ", "")
+        self.file.write(out_comment)
+        self.file.write(out)
+
     def write_arithmetic(self, parser):
         if parser.command == 'add':
             out_comment = f'//add\n'

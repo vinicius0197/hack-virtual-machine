@@ -17,9 +17,10 @@ class Parser:
     def __tokenize(self):
         try:
             tokens = self.line.split()
-            if self.command == 'function':
+            if tokens[0] == 'function':
                 self.command, self.function_name, self.variables = tokens
-            elif self.command == 'call':
+
+            elif tokens[0] == 'call':
                 # todo
                 print('hey')
             else:

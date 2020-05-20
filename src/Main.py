@@ -82,6 +82,8 @@ def handle_file_output(line, code_writer):
             code_writer.write_if(parser)
         elif parser.command_type == 'C_FUNCTION':
             code_writer.write_function(parser)
+        elif parser.command_type == 'C_RETURN':
+            code_writer.write_return(parser)
 
 
 def main():
