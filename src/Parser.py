@@ -7,6 +7,7 @@ class Parser:
         self.label = None
         self.function_name = None
         self.variables = None
+        self.arguments = None
 
         self.command_type = None
 
@@ -21,8 +22,7 @@ class Parser:
                 self.command, self.function_name, self.variables = tokens
 
             elif tokens[0] == 'call':
-                # todo
-                print('hey')
+                self.command, self.function_name, self.arguments = tokens
             else:
                 self.command, self.segment, self.index = tokens
         except ValueError:

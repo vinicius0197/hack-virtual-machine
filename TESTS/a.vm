@@ -1,0 +1,17 @@
+push constant 500
+call add300 1
+label LOOP
+goto LOOP
+
+function add300 2
+push argument 0
+push constant 300
+add
+call add15 1
+return
+
+function add15 1
+push argument 0
+push constant 15
+add
+return

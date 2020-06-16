@@ -52,6 +52,8 @@ class CodeWriter:
         out = f'({parser.function_name})\n \
                 @{parser.variables}\n \
                 D=A-1\n \
+                @{parser.function_name}$SETUP_END${self.label_counter}\n \
+                D;JLT\n \
                 (LOOP_{parser.function_name})\n \
                 @SP\n \
                 A=M\n \
@@ -60,7 +62,10 @@ class CodeWriter:
                 M=M+1\n \
                 @LOOP_{parser.function_name}\n \
                 D=D-1\n \
-                D;JGE\n'.replace(" ", "")
+                D;JGE\n \
+                ({parser.function_name}$SETUP_END$ \
+                    {self.label_counter})'.replace(" ", "")
+        self.label_counter += 1
         self.file.write(out_comment)
         self.file.write(out)
 
@@ -78,7 +83,7 @@ class CodeWriter:
                 D=M-D\n \
                 A=D\n \
                 D=M\n \
-                @retAddr\n \
+                @retAddr${self.label_counter}\n \
                 M=D\n \
                 // pop return value from stack\n \
                 @SP\n \
@@ -130,8 +135,68 @@ class CodeWriter:
                 @LCL\n \
                 M=D\n \
                 // goes to return address\n \
-                @retAddr\n \
+                @retAddr${self.label_counter}\n \
+                A=M\n \
                 0;JMP\n'.replace(" ", "")
+        self.label_counter += 1
+        self.file.write(out_comment)
+        self.file.write(out)
+
+    def write_call(self, parser):
+        out_comment = f'// call\n'
+        out = f'@{parser.function_name}$returnAddr\n \
+                D=A\n \
+                @SP\n \
+                M=M+1\n \
+                A=M-1\n \
+                M=D\n \
+                // saves LCL of the caller\n \
+                @LCL\n \
+                D=M\n \
+                @SP\n \
+                M=M+1\n \
+                A=M-1\n \
+                M=D\n \
+                // saves ARG of the caller\n \
+                @ARG\n \
+                D=M\n \
+                @SP\n \
+                M=M+1\n \
+                A=M-1\n \
+                M=D\n \
+                // saves THIS of the caller\n \
+                @THIS\n \
+                D=M\n \
+                @SP\n \
+                M=M+1\n \
+                A=M-1\n \
+                M=D\n \
+                // saves THAT of the caller\n \
+                @THAT\n \
+                D=M\n \
+                @SP\n \
+                M=M+1\n \
+                A=M-1\n \
+                M=D\n \
+                // reposition ARG\n \
+                @SP\n \
+                A=M\n \
+                D=A\n \
+                @5\n \
+                D=D-A\n \
+                @{parser.arguments}\n \
+                D=D-A\n \
+                @ARG\n \
+                M=D\n \
+                // reposition LCL\n \
+                @SP\n \
+                D=M\n \
+                @LCL\n \
+                M=D\n \
+                // transfer control to the called function\n \
+                @{parser.function_name}\n \
+                D;JMP\n \
+                ({parser.function_name}$returnAddr)\n'.replace(" ", "")
         self.file.write(out_comment)
         self.file.write(out)
 
